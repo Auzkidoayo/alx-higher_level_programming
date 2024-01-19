@@ -1,40 +1,42 @@
 #!/usr/bin/python3
-"""
-Lists all cities of a state on the DB hbtn_0e_4_usa
-using the state as argument
-Arguments:
-    username - username to connect the mySQL
-    mysql passwd - password to connect the mySQL
-    DB name - Name of the database
-    state name - name of the state to search
-"""
-
-
+"""Displays all cities of arguments state"""
 import MySQLdb
-from sys import argv
+import sys
+
+
+def list_cities():
+    """Takes arguments argv to list from database
+    Only lists with states that matches name argument
+
+    Arguments:
+        argv[1]: mysql username
+        argv[2]: mysql password
+        argv[3]: database name
+    """
+    if len(sys.argv) == 5:
+        db = MySQLdb.connect(host="localhost",
+                             port=3306,
+                             user=sys.argv[1],
+                             passwd=sys.argv[2],
+                             db=sys.argv[3])
+
+        cur = db.cursor()
+
+        cur.execute("SELECT cities.name FROM cities\
+                    JOIN states ON cities.state_id = states.id\
+                    AND states.name = '{:s}'\
+                    ORDER BY cities.id ASC".format(sys.argv[4]))
+
+        rows = cur.fetchall()
+
+        res = []
+        for i in rows:
+            res.append(i[0])
+
+        print(", ".join(res))
+
+        cur.close()
+        db.close()
+
 if __name__ == "__main__":
-
-    db = MySQLdb.connect(user=argv[1],
-                         passwd=argv[2],
-                         db=argv[3],
-                         host="localhost",
-                         port=3306)
-    """Connect to a MySQL server."""
-
-    cursor = db.cursor()
-    cursor.execute("SELECT cities.name\
-    FROM cities\
-    JOIN states\
-    ON state_id=states.id\
-    WHERE states.name = %s\
-    ORDER BY cities.id ASC", (argv[4],))
-
-   lists = cursor.fetchall()
-    cities = []
-    for row in lists:
-        if row[4] == state_name[0]:
-            cities.append(row[2])
-    print(', '.join(cities))
-
-    cursor.close()
-    db.close()
+    list_cities()
