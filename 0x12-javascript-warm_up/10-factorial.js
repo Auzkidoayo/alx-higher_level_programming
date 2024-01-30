@@ -1,17 +1,12 @@
-#!/usr/bin/nodejs
-// Factorial.
-
+#!/usr/bin/node
 function factorial (n) {
-  let total = 1;
-  let i = 1;
-  if (!n) {
-    return 1;
+  if (n < 0) {
+    return (-1);
   }
-  while (i <= n) {
-    total = total * i;
-    i++;
+  if (n === 0 || isNaN(n)) {
+    return (1);
   }
-  return total;
+  return (n * factorial(n - 1));
 }
 
-console.log(factorial(parseInt(process.argv[2])));
+console.log(factorial(Number(process.argv[2])));
